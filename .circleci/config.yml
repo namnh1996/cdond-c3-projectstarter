@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-    slack: circleci/slack@4.9.3
+    slack: circleci/slack@4.12.1
 commands:
     notify_on_failure:
         steps:
@@ -308,9 +308,9 @@ jobs:
             - image: circleci/base
         steps:
             - slack/notify:
-                    event: pass
-                    channel: cicd-pipeline
-                    template: success_tagged_deployment_1
+                  event: pass
+                  channel: cicd-pipeline
+                  template: success_tagged_deployment_1
 
 workflows:
     default:
