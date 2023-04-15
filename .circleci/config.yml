@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-    lack: circleci/slack@4.1
+    lack: circleci/slack@4.12.1
 commands:
     notify_on_failure:
         steps:
