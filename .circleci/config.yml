@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-    slack: circleci/slack@4.12.1
+    lack: circleci/slack@4.1
 commands:
     notify_on_failure:
         steps:
@@ -305,7 +305,7 @@ jobs:
     #             fi
     notify_on_success:
         docker:
-            - image: circleci/node:13.8.0
+            - image: circleci/base
         steps:
             - slack/notify:
                   event: pass
