@@ -305,12 +305,13 @@ jobs:
     #             fi
     notify_on_success:
         docker:
-            - image: circleci/base
+            - image: cimg/base
         steps:
             - slack/notify:
-                  event: pass
-                  channel: cicd-pipeline
-                  template: success_tagged_deployment_1
+                    event: pass
+                    channel: cicd-pipeline
+                    template: success_tagged_deployment_1
+
 workflows:
     default:
         jobs:
