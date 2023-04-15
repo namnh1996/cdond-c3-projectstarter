@@ -305,7 +305,7 @@ jobs:
     #             fi
     notify_on_success:
         docker:
-            - image: circleci/base:stable
+            - image: cimg/base:stable
         steps:
             - slack/notify:
                   event: pass
