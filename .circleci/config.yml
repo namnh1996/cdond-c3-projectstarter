@@ -197,6 +197,7 @@ jobs:
                   paths:
                       - project/.circleci/ansible/inventory.txt
             - destroy-environment
+            - notify_on_failure
 
             # Here's where you will add some code to rollback on failure
 
@@ -336,7 +337,7 @@ jobs:
         steps:
             - slack/notify:
                   event: pass
-                  channel: cicd-pipeline
+                  channel: cidi-pipeline
                   template: success_tagged_deployment_1
 
 workflows:
