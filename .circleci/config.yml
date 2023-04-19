@@ -335,9 +335,9 @@ jobs:
             - image: cimg/base:stable
         steps:
             - slack/notify:
-                event: pass
-                channel: notification_failed_cicd
-                template: success_tagged_deployment_1
+                  event: pass
+                  channel: cicd-pipeline
+                  template: success_tagged_deployment_1
 
 workflows:
     default:
@@ -374,4 +374,8 @@ workflows:
             # - cleanup:
             #     requires: [cloudfront-update]
             - notify_on_success:
-                  requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+                  requires:
+                      - test-frontend
+                      - test-backend
+                      - scan-frontend
+                      - scan-backend
