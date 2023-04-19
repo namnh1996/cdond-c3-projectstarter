@@ -201,23 +201,30 @@ jobs:
 
             # Here's where you will add some code to rollback on failure
 
-    #   configure-infrastructure:
-    #     docker:
-    #       # Docker image here that supports Ansible
-    #     steps:
-    #       # Checkout code from git
-    #       # Add ssh keys with fingerprint
-    #       # attach workspace
-    #       - run:
-    #           name: Install dependencies
-    #           command: |
-    #             # Your code here
-    #             exit 1
-    #       - run:
-    #           name: Configure server
-    #           command: |
-    #             # Your code here
-    #             exit 1
+    configure-infrastructure:
+        docker:
+            - image: cimg/base:stable
+        steps:
+            - checkout
+            - install_ansible
+            - add_ssh_keys:
+                  fingerprints:
+                      ["48:d2:c6:0e:0d:fc:41:7d:cf:8f:5f:f4:e0:58:fc:99"]
+            - attach_workspace:
+                  at: ~/
+            - run:
+                  name: Configure server
+                  command: |
+                      cd .circleci/ansible
+                      cd .ssh
+                      eval `ssh-agent`
+                      chmod 400 udacity.pem
+                      ssh-add udacity.pem 
+                      cd ..            
+                      cat inventory.txt                                        
+                      ansible-playbook -i inventory.txt -u ubuntu --private-key .ssh/udacity.pem configure-server.yml
+            - notify_on_failure
+            - destroy-environment
     #       # Here's where you will add some code to rollback on failure
 
     #   run-migrations:
@@ -360,8 +367,8 @@ workflows:
                   filters:
                       branches:
                           only: [master]
-            # - configure-infrastructure:
-            #     requires: [deploy-infrastructure]
+            - configure-infrastructure:
+                  requires: [deploy-infrastructure]
             # - run-migrations:
             #     requires: [configure-infrastructure]
             # - deploy-frontend:
