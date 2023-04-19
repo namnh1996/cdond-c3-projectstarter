@@ -28,17 +28,17 @@ commands:
                       sudo apt install software-properties-common -y
                       sudo add-apt-repository --yes --update ppa:ansible/ansible
                       sudo apt install ansible -y
-    destroy-environment:
-        description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
-        parameters:
-        steps:
-            - run:
-                  name: Destroy environments
-                  when: on_fail
-                  command: |
-                      aws s3 rm s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
-                      aws cloudformation delete-stack --stack-name udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}
-                      aws cloudformation delete-stack --stack-name udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}
+    # destroy-environment:
+    #     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
+    #     parameters:
+    #     steps:
+    #         - run:
+    #               name: Destroy environments
+    #               when: on_fail
+    #               command: |
+    #                   aws s3 rm s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
+    #                   aws cloudformation delete-stack --stack-name udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}
+    #                   aws cloudformation delete-stack --stack-name udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}
 #   revert-migrations:
 #     description: Revert the last migration if successfully run in the current workflow.
 #     parameters:
@@ -173,7 +173,7 @@ jobs:
                         --template-file .circleci/files/backend.yml \
                         --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
                         --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}" \
-                        --tags project=udapeople 
+                        --tags project=udapeople
             - run:
                   name: Ensure front-end infrastructure exist
                   command: |
@@ -196,7 +196,7 @@ jobs:
                   root: ~/
                   paths:
                       - project/.circleci/ansible/inventory.txt
-            - destroy-environment
+            # - destroy-environment
 
             # Here's where you will add some code to rollback on failure
 
