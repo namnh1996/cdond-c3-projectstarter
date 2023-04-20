@@ -294,7 +294,7 @@ jobs:
             - destroy-environment
             - revert-migrations
   
-    deploy-backend:s
+    deploy-backend:
         docker:
             - image: cimg/base:stable
         steps:
