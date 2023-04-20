@@ -253,7 +253,7 @@ jobs:
             - revert-migrations
     
     deploy-frontend:
-        docker:
+    docker:
             - image: cimg/base:stable
         steps:
             - checkout
