@@ -42,9 +42,9 @@ commands:
     revert-migrations:
         description: Revert the last migration if successfully run in the current workflow.
         parameters:
-        Workflow_ID:
-            type: string
-            default: ${CIRCLE_WORKFLOW_ID:0:7}
+            Workflow_ID:
+                type: string
+                default: ${CIRCLE_WORKFLOW_ID:0:7}
         steps:
             - run:
                   name: Revert migrations
@@ -377,7 +377,7 @@ workflows:
             - configure-infrastructure:
                   requires: [deploy-infrastructure]
             - run-migrations:
-                requires: [configure-infrastructure]
+                  requires: [configure-infrastructure]
             # - deploy-frontend:
             #     requires: [run-migrations]
             # - deploy-backend:
