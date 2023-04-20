@@ -76,7 +76,6 @@ jobs:
                   paths: [frontend/node_modules]
                   key: frontend-build
             - notify_on_failure
-
     build-backend:
         docker:
             - image: circleci/node:13.8.0
@@ -94,7 +93,6 @@ jobs:
                   paths: [backend/node_modules]
                   key: backend-build
             - notify_on_failure
-
     test-frontend:
         docker:
             - image: circleci/node:13.8.0
@@ -109,7 +107,6 @@ jobs:
                       npm install
                       npm test
             - notify_on_failure
-
     test-backend:
         docker:
             - image: circleci/node:13.8.0
@@ -124,7 +121,6 @@ jobs:
                       npm install
                       npm test
             - notify_on_failure
-    
     scan-frontend:
         docker:
             - image: circleci/node:13.8.0
@@ -141,7 +137,6 @@ jobs:
                       npm audit fix --force --audit-level=critical 
                       npm audit --audit-level=critical
             - notify_on_failure
-    
     scan-backend:
         docker:
             - image: circleci/node:13.8.0
@@ -158,7 +153,6 @@ jobs:
                       npm audit fix --audit-level=critical --force
                       npm audit --audit-level=critical
             - notify_on_failure
-    
     install_nodejs:
         description: Install Node.js
         steps:
@@ -167,7 +161,6 @@ jobs:
               command: |
                   curl -fsSL https://deb.nodesource.com/setup_13.x | sudo -E bash -
                   sudo apt install -y nodejs
-    
     deploy-infrastructure:
         docker:
             # Docker image here that supports AWS CLI
@@ -211,7 +204,6 @@ jobs:
             - notify_on_failure
 
             # Here's where you will add some code to rollback on failure
-
     configure-infrastructure:
         docker:
             - image: cimg/base:stable
@@ -236,7 +228,6 @@ jobs:
                       ansible-playbook -i inventory.txt -u ubuntu --private-key .ssh/key.pem configure-server.yml
             - notify_on_failure
             - destroy-environment
-
     run-migrations:
         docker:
             - image: cimg/node:13.8.0
@@ -260,7 +251,6 @@ jobs:
             - notify_on_failure
             - destroy-environment
             - revert-migrations
-
     deploy-frontend:
         docker:
             - image: cimg/base:stable
