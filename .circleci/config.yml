@@ -290,11 +290,11 @@ jobs:
                     npm run build            
                     aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
 
-        - notify_on_failure
-        - destroy-environment
-        - revert-migrations
+            - notify_on_failure
+            - destroy-environment
+            - revert-migrations
   
-    deploy-backend:
+    deploy-backend:s
         docker:
             - image: cimg/base:stable
         steps:
@@ -339,7 +339,9 @@ jobs:
                 export ANSIBLE_HOST_KEY_CHECKING=False
                 ansible-playbook -i inventory.txt deploy-backend.yml                                               
 
-        smigrations
+        - notify_on_failure
+        - destroy-environment
+        - revert-migrations
     #   smoke-test:
     #     docker:
     #       # Lightweight Docker image
