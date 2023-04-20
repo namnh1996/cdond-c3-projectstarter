@@ -124,6 +124,7 @@ jobs:
                       npm install
                       npm test
             - notify_on_failure
+    
     scan-frontend:
         docker:
             - image: circleci/node:13.8.0
@@ -140,6 +141,7 @@ jobs:
                       npm audit fix --force --audit-level=critical 
                       npm audit --audit-level=critical
             - notify_on_failure
+    
     scan-backend:
         docker:
             - image: circleci/node:13.8.0
@@ -156,7 +158,16 @@ jobs:
                       npm audit fix --audit-level=critical --force
                       npm audit --audit-level=critical
             - notify_on_failure
-
+    
+    install_nodejs:
+        description: Install Node.js
+        steps:
+            - run:
+              name: Install Nodejs
+              command: |
+                  curl -fsSL https://deb.nodesource.com/setup_13.x | sudo -E bash -
+                  sudo apt install -y nodejs
+    
     deploy-infrastructure:
         docker:
             # Docker image here that supports AWS CLI
@@ -225,7 +236,6 @@ jobs:
                       ansible-playbook -i inventory.txt -u ubuntu --private-key .ssh/key.pem configure-server.yml
             - notify_on_failure
             - destroy-environment
-    #       # Here's where you will add some code to rollback on failure
 
     run-migrations:
         docker:
@@ -251,44 +261,85 @@ jobs:
             - destroy-environment
             - revert-migrations
 
-    #   deploy-frontend:
-    #     docker:
-    #       # Docker image here that supports AWS CLI
-    #     steps:
-    #       # Checkout code from git
-    #       - run:
-    #           name: Install dependencies
-    #           command: |
-    #             # your code here
-    #       - run:
-    #           name: Get backend url
-    #           command: |
-    #             # your code here
-    #             export API_URL="http://${BACKEND_IP}:3030"
-    #             echo "${API_URL}"
-    #       - run:
-    #           name: Deploy frontend objects
-    #           command: |
-    #             # your code here
-    #       # Here's where you will add some code to rollback on failure
+    deploy-frontend:
+        docker:
+            - image: cimg/base:stable
+        steps:
+            - checkout
+            - install_awscli
+            - install_nodejs
+            - run:
+                name: Install dependencies
+                command: |
+                    cd frontend
+                    npm install
+            - run:
+                name: Get backend url
+                command: |
+                    BACKEND_PUBLIC_IP=$(aws ec2 describe-instances \
+                    --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" \
+                    --query 'Reservations[*].Instances[*].PublicIpAddress' \
+                    --output text
+                    )
+                    echo "API_URL=http://${BACKEND_PUBLIC_IP}:3030" >> frontend/.env
+                    cat frontend/.env
+            - run:
+                name: Deploy frontend objects
+                command: |
+                    cd frontend
+                    npm run build            
+                    aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
 
-    #   deploy-backend:
-    #     docker:
-    #       # Docker image here that supports Ansible
-    #     steps:
-    #       # Checkout code from git
-    #       # Add ssh keys with fingerprint
-    #       # attach workspace
-    #       - run:
-    #           name: Install dependencies
-    #           command: |
-    #             # your code here
-    #       - run:
-    #           name: Deploy backend
-    #           command: |
-    #             # your code here
-    #       # Here's where you will add some code to rollback on failure
+        - notify_on_failure
+        - destroy-environment
+        - revert-migrations
+  
+    deploy-backend:
+        docker:
+            - image: cimg/base:stable
+        steps:
+            - checkout
+            - install_awscli
+            - install_ansible
+            - install_nodejs
+        - add_ssh_keys:
+            fingerprints: ["48:d2:c6:0e:0d:fc:41:7d:cf:8f:5f:f4:e0:58:fc:99"]
+        - attach_workspace:
+            at: ~/
+        - restore_cache:
+            keys: [backend-dependencies]
+        - run:
+            name: Install dependencies
+            command: |
+                cd backend
+                npm install
+        - run:
+            name: Package backend
+            command: |
+                cd backend
+                npm run build
+                tar -czf artifact.tar.gz dist/* package*
+                cd ..
+                cp backend/artifact.tar.gz .circleci/ansible/roles/deploy/files
+        - run:
+            name: Deploy backend
+            command: |
+                export TYPEORM_MIGRATIONS_DIR=./migrations
+                export TYPEORM_ENTITIES=./modules/domain/**/*.entity{.ts,.js}
+                export TYPEORM_MIGRATIONS=./migrations/*.ts
+                cd .circleci/ansible
+                
+                cd .ssh
+                eval `ssh-agent`
+                chmod 400 key.pem
+                ssh-add key.pem 
+                cd ..     
 
+                cat inventory.txt
+                export ANSIBLE_HOST_KEY_CHECKING=False
+                ansible-playbook -i inventory.txt deploy-backend.yml                                               
+
+        smigrations
     #   smoke-test:
     #     docker:
     #       # Lightweight Docker image
