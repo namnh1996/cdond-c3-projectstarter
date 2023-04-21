@@ -322,8 +322,8 @@ jobs:
 
                       cd .ssh
                       eval `ssh-agent`
-                      chmod 400 keyp3.pem
-                      ssh-add keyp3.pem 
+                      chmod 400 key.pem
+                      ssh-add key.pem 
                       cd ..     
 
                       cat inventory.txt
