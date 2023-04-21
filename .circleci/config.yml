@@ -57,7 +57,14 @@ commands:
                       npm install
                       npm run migration:revert
                       fi
-
+    install_nodejs:
+        description: Install Node.js
+        steps:
+            - run:
+              name: Install Nodejs
+              command: |
+                  curl -fsSL https://deb.nodesource.com/setup_13.x | sudo -E bash -
+                  sudo apt install -y nodejs
 jobs:
     build-frontend:
         docker:
@@ -153,14 +160,7 @@ jobs:
                       npm audit fix --audit-level=critical --force
                       npm audit --audit-level=critical
             - notify_on_failure
-    install_nodejs:
-        description: Install Node.js
-        steps:
-            - run:
-              name: Install Nodejs
-              command: |
-                  curl -fsSL https://deb.nodesource.com/setup_13.x | sudo -E bash -
-                  sudo apt install -y nodejs
+
     deploy-infrastructure:
         docker:
             # Docker image here that supports AWS CLI
