@@ -51,10 +51,10 @@ commands:
                   when: on_fail
                   command: |
                       SUCCESS=$(curl --insecure https://kvdb.io/CJhzGNYEFHWL71z3PVjMum/migration_<<parameters.Workflow_ID>>)
-                      if(( $SUCCESS==1 )); 
+                      if [[ "${SUCCESS}" == "1" ]]; 
                       then
                         cd ~/project/backend
-                        yarn install
+                        npm install
                         npm run migration:revert
                       fi
     install_nodejs:
